@@ -26,7 +26,9 @@ const LoginPage: FC = () => {
   );
 
   const handleLogin = (values: ILoginPostData): void => {
-    loginMutation({ data: values });
+    loginMutation({
+      data: values,
+    });
   };
 
   const loginFormik = useLoginForm({
