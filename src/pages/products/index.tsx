@@ -1,4 +1,3 @@
-// import Products from "@/components/pages/products/products";
 import { ILayoutPage } from "@/components/layout/getLayout.types";
 import MainLayout from "@/components/layout/main/mainLayout";
 import Header from "@/components/pages/products/header/header";
@@ -12,39 +11,36 @@ import useAddProductForm from "@/components/pages/products/hooks/useAddProductFo
 import { formikErrorHandler } from "@/utils/formikErrorHandler";
 import MainButton from "@/components/ui/buttons/main/mainButton";
 import { toast } from "react-toastify";
-const LIMIT_SIZE = 5;
-const ProductsPage = (): JSX.Element => {
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-  //   useInfiniteQuery<any, Error>(["items"], getProducts, {
-  //     getNextPageParam: (lastPage) =>
-  //       lastPage.meta.skipped + LIMIT_SIZE < lastPage.meta.total
-  //         ? lastPage.meta.skipped + LIMIT_SIZE
-  //         : undefined,
-  //   });
-  // console.log(data);
 
+const ProductsPage = (): JSX.Element => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(true);
-    console.log("Asd");
-  };
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const style = {
-    position: "absolute",
+    position: "absolute" as "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "500px",
+    width: 500,
     bgcolor: "background.paper",
     border: "1px solid #B6B6B6",
     padding: "50px 100px",
     borderRadius: "16px",
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    setFile(selectedFile);
+  };
+
   const { mutate: createNewProductMutation, isLoading: loginIsLoading } =
     useMutation(createNewProduct, {
-      onSuccess(res) {
+      onSuccess() {
         toast.success("محصول جدید با موفقیت اضافه شد");
+        handleClose(); // Close the modal on success
       },
       onError() {
         toast.error("خطایی رخ داده است");
@@ -52,8 +48,14 @@ const ProductsPage = (): JSX.Element => {
     });
 
   const handleAddProduct = (values: any): void => {
+    const formData = new FormData();
+    if (file) formData.append("File", file);
+    Object.keys(values).forEach((key) => {
+      formData.append(key, values[key]);
+    });
+
     createNewProductMutation({
-      data: values,
+      data: formData,
     });
   };
 
@@ -67,6 +69,14 @@ const ProductsPage = (): JSX.Element => {
     formik.handleSubmit();
   };
 
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery<any, Error>(["items"], getProducts, {
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.skipped + 5 < lastPage.meta.total
+          ? lastPage.meta.skipped + 5
+          : undefined,
+    });
+  console.log(data);
   return (
     <>
       <Header handleClick={handleOpen} />
@@ -80,7 +90,7 @@ const ProductsPage = (): JSX.Element => {
         <Box sx={style}>
           <form onSubmit={handleSubmit}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              افزودن محصول{" "}
+              افزودن محصول
             </Typography>
             <MainInput
               outerLabel="نام محصول"
@@ -99,7 +109,7 @@ const ProductsPage = (): JSX.Element => {
               error={Boolean(
                 formik.errors.ProductPrice && formik.touched.ProductPrice
               )}
-            />{" "}
+            />
             <MainInput
               minRows={4}
               multiline
@@ -110,15 +120,22 @@ const ProductsPage = (): JSX.Element => {
               error={Boolean(
                 formik.errors.Description && formik.touched.Description
               )}
-            />{" "}
+            />
+            <Typography variant="h6">Upload Photo</Typography>
+            <input accept="image/*" type="file" onChange={handleFileChange} />
             <Grid container mt={5} spacing={1}>
               <Grid item md={6}>
-                <MainButton variant="text" fullWidth>
+                <MainButton variant="text" fullWidth onClick={handleClose}>
                   انصراف
                 </MainButton>
               </Grid>
               <Grid item md={6}>
-                <MainButton variant="contained" fullWidth type="submit">
+                <MainButton
+                  variant="contained"
+                  fullWidth
+                  type="submit"
+                  disabled={loginIsLoading}
+                >
                   ثبت محصول
                 </MainButton>
               </Grid>
