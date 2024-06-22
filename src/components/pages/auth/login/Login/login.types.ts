@@ -1,6 +1,6 @@
 import { FormikProps } from "formik";
 import { FormEvent } from "react";
-import { ILoginFormikProps } from "../hooks/useLoginForm/useRegisterForm.types";
+import { ILoginFormikProps } from "../hooks/useLoginForm/useLoginForm.types";
 
 export interface ILoginDesktopProps {
   formik: FormikProps<ILoginFormikProps>;

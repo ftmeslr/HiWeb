@@ -6,7 +6,6 @@ const MainButtonStyled = styled(LoadingButton)(() => ({
   boxShadow: "none",
   padding: "9px",
   fontSize: "16px",
-  color: "#fff",
   "&:hover": {
     boxShadow: "none",
   },

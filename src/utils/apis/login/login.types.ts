@@ -3,4 +3,6 @@ export interface ILoginPostData {
   password: string;
 }
 
-export interface ILoginFormPostData {}
+export interface ILoginFormPostData {
+  data: any;
+}

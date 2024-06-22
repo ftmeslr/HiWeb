@@ -1,6 +1,5 @@
-import axios from "axios";
-import { ILoginFormPostData, ILoginPostData } from "./login.types";
 import { hiwebApi } from "../api";
+import { ILoginFormPostData, ILoginPostData } from "./login.types";
 
 export const loginFormPost = async ({
   data,

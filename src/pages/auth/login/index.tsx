@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { FC, FormEvent } from "react";
 import { toast } from "react-toastify";
 import Login from "@/components/pages/auth/login/Login/login";
+import { setToken } from "../token/token";
 
 const LoginPage: FC = () => {
   const router = useRouter();
@@ -15,8 +16,10 @@ const LoginPage: FC = () => {
   const { mutate: loginMutation, isLoading: loginIsLoading } = useMutation(
     loginFormPost,
     {
-      onSuccess() {
-        router.push("/");
+      onSuccess(res) {
+        setToken(res.data.accessToken.access_token || "");
+
+        router.push("/products");
         toast.success("با موفقیت وارد شدید");
       },
       onError() {
