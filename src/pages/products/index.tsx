@@ -4,7 +4,7 @@ import Header from "@/components/pages/products/header/header";
 import EmptyList from "@/components/ui/emptyList/emptyList";
 import { createNewProduct, getProducts } from "@/utils/apis/products/products";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Stack, Typography, Grid } from "@mui/material";
+import { Stack, Typography, Grid, Skeleton } from "@mui/material";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import MainInput from "@/components/ui/inputs/main/mainInput";
 import useAddProductForm from "@/components/pages/products/hooks/useAddProductForm/useAddProductForm";
@@ -72,10 +72,14 @@ const ProductsPage = (): JSX.Element => {
     onSuccess: (res) => {
       if (res.data?.totalRowCount < pageNumber) setHasMore(false);
       console.log(res?.data?.list);
-      setProductList((prev: any) => [...prev, ...res?.data?.list]);
+      // setProductList((prev: any) => [...prev, ...res?.data?.list]);
+      for (var i = 0; i < res?.data?.list.length; i++) {
+        productList.push(res?.data?.list[i]);
+      }
     },
   });
 
+  console.log("productList", productList);
   const triggerRef = useRef(null);
 
   const observerCallback = (entries: IntersectionObserverEntry[]) => {
@@ -103,31 +107,35 @@ const ProductsPage = (): JSX.Element => {
       {" "}
       <Stack sx={{ padding: "0 100px" }}>
         <Header handleClick={() => setOpen(true)} />
-        {!isLoading ? (
-          productList ? (
-            <>
-              <Grid container mt={4}>
-                {productList.map((product, index) => {
-                  return (
-                    <Grid item lg={3} key={index} p={2}>
-                      <ProductCard
-                        title={product.title}
-                        productImg={product.imageUrl}
-                        description={product.description}
-                        amount={product.price}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-              <div ref={triggerRef} />
-            </>
-          ) : (
-            <EmptyList title="محصول خود را وارد نمایید." />
-          )
+        {productList ? (
+          <>
+            <Grid container mt={4}>
+              {productList.map((product, index) => {
+                return (
+                  <Grid item lg={3} key={index} p={2}>
+                    <ProductCard
+                      title={product.title}
+                      productImg={product.imageUrl}
+                      description={product.description}
+                      amount={product.price}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+            <div ref={triggerRef} />
+          </>
         ) : (
-          <>loading...</>
+          <EmptyList title="محصول خود را وارد نمایید." />
         )}
+        <Grid container mt={2}>
+          {!isLoading &&
+            [...Array(8)].map((_item, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index} px={2}>
+                <Skeleton height={200}></Skeleton>
+              </Grid>
+            ))}{" "}
+        </Grid>
       </Stack>
       <Modal open={open} setOpen={setOpen}>
         <form onSubmit={handleSubmit}>
