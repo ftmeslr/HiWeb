@@ -1,6 +1,12 @@
 import Head from "next/head";
+import Image from "next/image";
+import mainLogo from "@images/main_logo.svg";
+import MainButton from "@/components/ui/buttons/main/mainButton";
+import { Stack } from "@mui/material";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -9,7 +15,24 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main></main>
+      <main>
+        <Stack
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          height={"100vh"}
+        >
+          <Image src={mainLogo} alt={"mainLogo"} />
+          <MainButton
+            variant="contained"
+            color={"error"}
+            sx={{ marginTop: "10px" }}
+            onClick={() => router.push("/auth/login")}
+          >
+            وارد شوید
+          </MainButton>
+        </Stack>
+      </main>
     </>
   );
 }
