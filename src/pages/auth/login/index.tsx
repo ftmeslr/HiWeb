@@ -38,7 +38,7 @@ const LoginPage: FC = () => {
     onSubmit: handleLogin,
   });
 
-  const registerFormHandleSubmit = (
+  const loginFormHandleSubmit = (
     event: FormEvent<HTMLFormElement>
   ): void => {
     event.preventDefault();
@@ -50,7 +50,7 @@ const LoginPage: FC = () => {
     <Login
       formik={loginFormik}
       isLoading={loginIsLoading}
-      onSubmit={registerFormHandleSubmit}
+      onSubmit={loginFormHandleSubmit}
     />
   );
 };

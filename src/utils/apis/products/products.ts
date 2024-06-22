@@ -5,9 +5,12 @@ import {
   IGetProductsResponse,
 } from "./products.types";
 
-export const getProducts = async (): Promise<IGetProductsResponse> => {
+export const getProducts = async (
+  pageNumber: any
+): Promise<IGetProductsResponse> => {
+  console.log(pageNumber);
   const response = await hiwebApi.get<IGetProductsResponse>(
-    `General/Product/ProductList?count=${5}0&skip=${0}`
+    `General/Product/ProductList?count=${4}&skip=${pageNumber}`
   );
   return response.data;
 };

@@ -3,16 +3,16 @@ import MainLayout from "@/components/layout/main/mainLayout";
 import Header from "@/components/pages/products/header/header";
 import EmptyList from "@/components/ui/emptyList/emptyList";
 import { createNewProduct, getProducts } from "@/utils/apis/products/products";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Stack, Typography, Grid } from "@mui/material";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import MainInput from "@/components/ui/inputs/main/mainInput";
 import useAddProductForm from "@/components/pages/products/hooks/useAddProductForm/useAddProductForm";
 import { formikErrorHandler } from "@/utils/formikErrorHandler";
 import MainButton from "@/components/ui/buttons/main/mainButton";
 import { toast } from "react-toastify";
 import Modal from "@/components/ui/modal/modal";
-import ProductList from "@/components/pages/products/productList/productList";
+import ProductCard from "@/components/ui/cards/productCard/productCard";
 
 const ProductsPage = (): JSX.Element => {
   const [open, setOpen] = useState(false);
@@ -48,36 +48,86 @@ const ProductsPage = (): JSX.Element => {
   const formik = useAddProductForm({
     onSubmit: handleAddProduct,
   });
-
+  const [pageNumber, setPageNumber] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [productList, setProductList] = useState<
+    {
+      description: string;
+      id: string;
+      imageUrl: string;
+      price: number;
+      rate: number;
+      title: string;
+      view: number;
+    }[]
+  >([]);
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (formikErrorHandler(formik)) return;
     formik.handleSubmit();
   };
-
-  const {
-    data: productList,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery<any, Error>(["items"], getProducts, {
-    getNextPageParam: (lastPage) =>
-      lastPage.skipped + 5 < lastPage.totalRowCount
-        ? lastPage.skipped + 5
-        : undefined,
+  const { data: listProduct, isLoading } = useQuery({
+    queryKey: ["getListProduct", pageNumber],
+    queryFn: () => getProducts(pageNumber),
+    onSuccess: (res) => {
+      if (res.data?.totalRowCount < pageNumber) setHasMore(false);
+      console.log(res?.data?.list);
+      setProductList((prev: any) => [...prev, ...res?.data?.list]);
+    },
   });
+
+  const triggerRef = useRef(null);
+
+  const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+
+    if (target.isIntersecting && !isLoading && hasMore) {
+      setPageNumber((prevPageNumber: number) => prevPageNumber + 4);
+    }
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(observerCallback, {
+      threshold: 0.5,
+    });
+
+    if (triggerRef.current) {
+      observer.observe(triggerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isLoading, hasMore]);
 
   return (
     <>
       {" "}
       <Stack sx={{ padding: "0 100px" }}>
         <Header handleClick={() => setOpen(true)} />
-        {!isLoading && productList?.pages[0]?.data?.list ? (
-          <ProductList listProduct={productList?.pages[0]?.data?.list} />
+        {!isLoading ? (
+          productList ? (
+            <>
+              <Grid container mt={4}>
+                {productList.map((product, index) => {
+                  return (
+                    <Grid item lg={3} key={index} p={2}>
+                      <ProductCard
+                        title={product.title}
+                        productImg={product.imageUrl}
+                        description={product.description}
+                        amount={product.price}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+              <div ref={triggerRef} />
+            </>
+          ) : (
+            <EmptyList title="محصول خود را وارد نمایید." />
+          )
         ) : (
-          <EmptyList title="محصول خود را وارد نمایید." />
-        )}{" "}
+          <>loading...</>
+        )}
       </Stack>
       <Modal open={open} setOpen={setOpen}>
         <form onSubmit={handleSubmit}>
@@ -113,13 +163,51 @@ const ProductsPage = (): JSX.Element => {
               formik.errors.Description && formik.touched.Description
             )}
           />
-          <Typography variant="h6">Upload Photo</Typography>
-          <input accept="image/*" type="file" onChange={handleFileChange} />
+
+          <div
+            style={{
+              position: "relative",
+              display: "inline-block",
+              marginTop: "10px",
+              border: "1px solid #B6B6B6",
+              width: "100%",
+              borderRadius: "10px",
+            }}
+          >
+            <label
+              htmlFor="file-input"
+              style={{
+                display: "inline-block",
+                color: "#000",
+                padding: "10px 20px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                background: " #C9C9C9",
+              }}
+            >
+              انتخاب فایل
+            </label>
+            <input
+              onChange={handleFileChange}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: "pointer",
+              }}
+              accept="image/*"
+              type="file"
+            />
+          </div>
           <Grid container mt={5} spacing={1}>
             <Grid item md={6}>
               <MainButton
                 variant="text"
                 fullWidth
+                sx={{ fontSize: "12px" }}
                 onClick={() => setOpen(false)}
               >
                 انصراف
@@ -131,6 +219,7 @@ const ProductsPage = (): JSX.Element => {
                 fullWidth
                 type="submit"
                 disabled={loginIsLoading}
+                sx={{ fontSize: "12px", color: "#fff" }}
               >
                 ثبت محصول
               </MainButton>
