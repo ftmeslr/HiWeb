@@ -1,14 +1,13 @@
 import MainButton from "@/components/ui/buttons/main/mainButton";
 import LogoutIcon from "@/components/ui/icons/logout";
-import { Typography, Stack, useTheme } from "@mui/material";
-import styles from "./heaer.styles";
 import PlusIcon from "@/components/ui/icons/plus";
+import { Stack, Typography, useTheme } from "@mui/material";
 import cookie from "cookie";
+import styles from "./heaer.styles";
 
+import { useRouter } from "next/router";
 import { FC } from "react";
 import { IHeaderProps } from "./header.types";
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
 const Header: FC<IHeaderProps> = (props) => {
   const { HeaderContainerStyled, LeftSideHeaderStyled } = styles;
   const { handleClick } = props;
@@ -34,6 +33,7 @@ const Header: FC<IHeaderProps> = (props) => {
             paddingX: "60px",
             fontWeight: "400",
           }}
+
           onClick={() => {
             handleClick();
           }}
