@@ -1,9 +1,12 @@
 import { FC } from "react";
 import { MainLayoutProps } from "./mainLayout.types";
+import { Stack } from "@mui/material";
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div style={{ padding: "0 100px", backgroundColor: "red" }}>{children}</div>
+    <Stack sx={{ padding: "0 100px", backgroundColor: "red" }}>
+      {children}
+    </Stack>
   );
 };
 

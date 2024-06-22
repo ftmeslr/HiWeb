@@ -4,9 +4,9 @@ const PlusIcon: React.FC<SvgIconProps> = (props) => {
   const { sx, ...otherProps } = props;
   return (
     <SvgIcon
-      width="18"
-      height="19"
-      viewBox="0 0 18 19"
+      width="24"
+      height="25"
+      viewBox="0 0 25 24"
       sx={{ ...sx }}
       {...otherProps}
     >
