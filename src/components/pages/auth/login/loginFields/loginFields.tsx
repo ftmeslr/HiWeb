@@ -35,7 +35,12 @@ const LoginFields: React.FC<ILoginFieldsProps> = ({
           </Typography>
         </Stack>
 
-        <MainButton variant="contained" type="submit" loading={isLoading}>
+        <MainButton
+          variant="contained"
+          type="submit"
+          loading={isLoading}
+          sx={{ color: "#fff" }}
+        >
           ورود
         </MainButton>
       </StyledContainer>

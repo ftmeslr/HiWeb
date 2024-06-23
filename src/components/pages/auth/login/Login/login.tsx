@@ -13,12 +13,19 @@ const Login: React.FC<ILoginDesktopProps> = ({
   onSubmit,
 }) => {
   return (
-    <Grid container component="main">
+    <Grid
+      container
+      component="main"
+      display={"flex"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      height={"100vh"}
+    >
       <Grid item md={6}>
         <Image
           src={loginMainImg}
           alt="loginMainImg"
-          style={{ width: "100%" }}
+          style={{ width: "100%", height: "500px" }}
         />
       </Grid>
       <Grid

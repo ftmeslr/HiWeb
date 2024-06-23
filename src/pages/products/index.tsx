@@ -104,7 +104,6 @@ const ProductsPage = (): JSX.Element => {
 
   return (
     <>
-      {" "}
       <Stack sx={{ padding: "0 100px" }}>
         <Header handleClick={() => setOpen(true)} />
         {productList ? (
@@ -130,6 +129,7 @@ const ProductsPage = (): JSX.Element => {
         )}
         <Grid container mt={2}>
           {!isLoading &&
+            hasMore &&
             [...Array(8)].map((_item, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index} px={2}>
                 <Skeleton height={200}></Skeleton>
